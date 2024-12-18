@@ -10,8 +10,8 @@
 
 
  /*------------------Libraries---------------------*/
-#include "kernels.cuh"
 #include "renderer.h"
+#include "kernels.cuh"
 /*------------Varible initialzation---------------*/
 
 /*------------Funcition Defenitions---------------*/

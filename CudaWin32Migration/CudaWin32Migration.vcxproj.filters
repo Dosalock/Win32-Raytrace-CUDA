@@ -30,6 +30,12 @@
     <ClCompile Include="main.cpp">
       <Filter>src\win32</Filter>
     </ClCompile>
+    <ClCompile Include="renderer.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="cuda_manager.cpp">
+      <Filter>src\cuda</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -47,11 +53,11 @@
     <ClInclude Include="object_structs.h">
       <Filter>include\cuda</Filter>
     </ClInclude>
-    <ClInclude Include="renderer.cpp">
-      <Filter>src\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="renderer.h">
       <Filter>src\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="cuda_manager.h">
+      <Filter>src\cuda</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -9,22 +9,22 @@
  */
 
 
- /*------------------Includes---------------------*/
+/*------------------Includes---------------------*/
 #include "main.h"
-
+#include "cuda_manager.h"
+#include <iostream>
 /*------------Varible initialzation--------------*/
 
 HBITMAP hBitmap = NULL;
-HDC hdcWindow = NULL;
-BYTE *lpvBits = NULL;
-RECT window = {};
-//Camera cam = {};
-int height = 0;
-int width = 0;
-//std::chrono::time_point deltaTime = std::chrono::steady_clock().now();
+HDC hdcWindow   = NULL;
+BYTE *lpvBits   = NULL;
+RECT window     = { };
+Camera cam      = { };
+int height      = 0;
+int width       = 0;
+// std::chrono::time_point deltaTime = std::chrono::steady_clock().now();
 bool cameraIsMoving = false;
 bool button_pressed = false;
-
 
 /*-------------Function Definitions--------------*/
 
@@ -39,57 +39,56 @@ bool button_pressed = false;
  * @param nCmdShow Controls how the window is to be shown
  * @return
  */
-int WINAPI WinMain(_In_ HINSTANCE hInstance,
-				   _In_opt_ HINSTANCE hPrevInstance,
-				   _In_ LPSTR lpCmdLine,
-				   _In_ int nCmdShow)
+int WINAPI WinMain ( _In_ HINSTANCE hInstance,
+					 _In_opt_ HINSTANCE hPrevInstance,
+					 _In_ LPSTR lpCmdLine,
+					 _In_ int nCmdShow )
 {
-
-	//Register window class
+	// Register window class
 	const wchar_t CLASS_NAME[] = L"Window";
 
 
-	WNDCLASS WindowClass = {};
+	WNDCLASS WindowClass = { };
 
-	WindowClass.lpfnWndProc = WindowProc;
-	WindowClass.hInstance = hInstance;
+	WindowClass.lpfnWndProc   = WindowProc;
+	WindowClass.hInstance     = hInstance;
 	WindowClass.lpszClassName = CLASS_NAME;
 
 
-	RegisterClass(&WindowClass);
+	RegisterClass( &WindowClass );
 
 	// Create window
-	HWND hwnd = CreateWindowEx(
-		0,
-		CLASS_NAME,
-		L"Win32 Raytracer",
-		WS_OVERLAPPEDWINDOW,		// Style of window
+	HWND hwnd = CreateWindowEx( 0,
+								CLASS_NAME,
+								L"Win32 Raytracer",
+								WS_OVERLAPPEDWINDOW, // Style of window
 
-		CW_USEDEFAULT, CW_USEDEFAULT,
-		1040, 1063,
+								CW_USEDEFAULT,
+								CW_USEDEFAULT,
+								1040,
+								1063,
 
-		NULL,
-		NULL,
-		hInstance,
-		NULL
-	);
+								NULL,
+								NULL,
+								hInstance,
+								NULL );
 
-	if (hwnd == NULL)
+	if ( hwnd == NULL )
 	{
 		return 0;
 	}
 
-	GetClientRect(hwnd, &window);
-	//Init(&lpvBits, &window, &hBitmap);
-	ShowWindow(hwnd, nCmdShow);
-	UpdateWindow(hwnd);
+	GetClientRect( hwnd, &window );
+	Init( &lpvBits, &window, &hBitmap );
+	ShowWindow( hwnd, nCmdShow );
+	UpdateWindow( hwnd );
 
 	MSG msg = { };
 
-	while (GetMessage(&msg, NULL, 0, 0) > 0)
+	while ( GetMessage( &msg, NULL, 0, 0 ) > 0 )
 	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+		TranslateMessage( &msg );
+		DispatchMessage( &msg );
 	}
 
 	return 0;
@@ -104,29 +103,18 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance,
  * @param lParam data pertaining to message if neeeded
  * @return
  */
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WindowProc ( HWND hwnd,
+							  UINT uMsg,
+							  WPARAM wParam,
+							  LPARAM lParam )
 {
-	double secondsPerFrame = 3300000;
-	float moveSpeed = 0.1f;
-	float rotationSpeed = 2.0f;
-	width = window.right;
-	height = window.bottom;
-	
+	double secondsPerFrame = 3'300'000;
+	float moveSpeed        = 0.1f;
+	float rotationSpeed    = 2.0f;
+	width                  = window.right;
+	height                 = window.bottom;
 
-	if (cameraIsMoving)
-	{
-		//cam.MoveForward(moveSpeed);
-	}
-
-	if (width > 0 && button_pressed == true)
-	{
-		//Draw(&lpvBits, width, height, cam);
-		InvalidateRect(hwnd, NULL, TRUE);
-		//std::this_thread::sleep_for(timestep);
-		//deltaTime = clock::now();
-		button_pressed = false;
-	}
-	switch (uMsg)
+	switch ( uMsg )
 	{
 		case WM_CREATE:
 		{
@@ -135,11 +123,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case WM_DESTROY:
 		{
 			// Cleanup
-			if (hBitmap)
+			if ( hBitmap )
 			{
-				DeleteObject(hBitmap);
+				DeleteObject( hBitmap );
 			}
-			PostQuitMessage(0);
+			PostQuitMessage( 0 );
 
 			break;
 		}
@@ -148,22 +136,22 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			PAINTSTRUCT ps;
 
-			GetClientRect(hwnd, &window); // Use client area dimensions
-			width = window.right;
-			height = window.bottom;
-			HDC hdc = BeginPaint(hwnd, &ps);
+			GetClientRect( hwnd, &window ); // Use client area dimensions
+			width   = window.right;
+			height  = window.bottom;
+			HDC hdc = BeginPaint( hwnd, &ps );
 
-			HDC hdcMem = CreateCompatibleDC(hdc);
-			HGDIOBJ oldBitmap = SelectObject(hdcMem, hBitmap);
+			HDC hdcMem        = CreateCompatibleDC( hdc );
+			HGDIOBJ oldBitmap = SelectObject( hdcMem, hBitmap );
 
-			BitBlt(hdc, 0, 0, width, height, hdcMem, 0, 0, SRCCOPY);
+			BitBlt( hdc, 0, 0, width, height, hdcMem, 0, 0, SRCCOPY );
 
-			SelectObject(hdcMem, oldBitmap);
-			DeleteDC(hdcMem);
+			SelectObject( hdcMem, oldBitmap );
+			DeleteDC( hdcMem );
 
 			// All painting occurs here, between BeginPaint and EndPaint.
 
-			EndPaint(hwnd, &ps);
+			EndPaint( hwnd, &ps );
 
 			break;
 		}
@@ -178,40 +166,70 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		case WM_KEYDOWN:
 		{
-			switch (wParam)
+			switch ( wParam )
 			{
 				case 'W':
 				{
-					//cam.MoveForward(moveSpeed);
+					// cam.MoveForward(moveSpeed);
 					break;
 				}
 				case 'A':
 				{
-					//cam.MoveSideways(moveSpeed);
+					// cam.MoveSideways(moveSpeed);
 					break;
 				}
 				case 'S':
 				{
-					//cam.MoveForward(-moveSpeed);
+					// cam.MoveForward(-moveSpeed);
 					break;
 				}
 				case 'D':
 				{
-					//cam.MoveSideways(-moveSpeed);
+					// cam.MoveSideways(-moveSpeed);
 					break;
 				}
 				case 'Q':
 				{
-					//cam.yaw -= rotationSpeed;
+					// cam.yaw -= rotationSpeed;
 					break;
 				}
 				case 'E':
 				{
-					//cam.yaw += rotationSpeed;
+					// cam.yaw += rotationSpeed;
 					break;
 				}
 				case 'M':
 				{
+					try
+					{
+						CUDAManager::GetInstance( ).Initialize( );
+
+
+						auto devices =
+						  CUDAManager::GetInstance( ).GetAvailableDevices( );
+						for ( const auto &device : devices )
+						{
+							std::cout << "Device:" << device.name
+									  << ", Compute Capability: "
+									  << device.computeCapability << std::endl;
+						}
+						BYTE *twopv_bits =
+						  ( BYTE *)malloc( width*height*4);
+						CUDAManager::GetInstance( ).ProcessGPUData(
+						  lpvBits,
+						  twopv_bits,
+						  width * height * 4 );
+						memcpy( lpvBits, twopv_bits, width*height*4);
+						InvalidateRect( hwnd, NULL, TRUE );
+						free( twopv_bits);
+					}
+					catch ( const std::exception &e )
+					{
+						std::cerr << "CUDA Error: " << e.what( ) << std::endl;
+					}
+
+
+					
 					button_pressed = true;
 					break;
 				}
@@ -222,12 +240,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		default:
 		{
-			return DefWindowProc(hwnd, uMsg, wParam, lParam);
+			return DefWindowProc( hwnd, uMsg, wParam, lParam );
 		}
 	}
-	return DefWindowProc(hwnd, uMsg, wParam, lParam);
+	return DefWindowProc( hwnd, uMsg, wParam, lParam );
 }
-
-
-
-

@@ -129,13 +129,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cuda_manager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cuda_manager.h" />
     <ClInclude Include="cuda_vector_functions.h" />
     <ClInclude Include="cuda_matrix_struct.h" />
     <ClInclude Include="renderer.h" />
-    <ClInclude Include="renderer.cpp" />
     <ClInclude Include="kernels.cuh" />
     <ClInclude Include="main.h" />
     <ClInclude Include="object_structs.h" />

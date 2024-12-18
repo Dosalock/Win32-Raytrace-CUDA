@@ -2,38 +2,37 @@
 
 
 #include <Windows.h>
-#include <cuda_fp16.h>
 #include <cmath>
-
+#include <cuda_fp16.h>
 
 struct Camera
 {
 	float4 position;
-	float  yaw;
-	float  pitch;
-	float  roll;
+	float yaw;
+	float pitch;
+	float roll;
 };
 
 struct Sphere
 {
-	float4   center;
-	float    radius;
+	float4 center;
+	float radius;
 	COLORREF color;
-	int      specularity;
-	float    reflective;
-	float	 radius_squared;
+	int specularity;
+	float reflective;
+	float radius_squared;
 
-	__host__ __device__ Sphere(float4   center = { },
-							   float    radius = 0,
-							   COLORREF color = RGB(0, 0, 0),
-							   int      specularity = 0,
-							   float    reflective = 0)
+	__device__ Sphere ( float4 center    = { },
+			 float radius     = 0,
+			 COLORREF color   = RGB( 0, 0, 0 ),
+			 int specularity  = 0,
+			 float reflective = 0 )
 	{
-		this->center = center;
-		this->radius = radius;
-		this->color = color;
-		this->specularity = specularity;
-		this->reflective = reflective;
+		this->center         = center;
+		this->radius         = radius;
+		this->color          = color;
+		this->specularity    = specularity;
+		this->reflective     = reflective;
 		this->radius_squared = radius * radius;
 	}
 };
@@ -47,18 +46,18 @@ struct Light
 		ambient
 	} type;
 
-	float  intensity;
+	float intensity;
 	float4 pos;
 };
 
-struct __align__(16) Intersection
+struct Intersection
 {
 	Sphere *sphere;
-	float   point;
+	float point;
 
-	__host__ __device__ Intersection(Sphere * sphere = nullptr, float point = INFINITY)
+	__device__ Intersection ( Sphere *sphere = NULL, float point = INFINITY )
 	{
 		this->sphere = sphere;
-		this->point = point;
+		this->point  = point;
 	}
 };

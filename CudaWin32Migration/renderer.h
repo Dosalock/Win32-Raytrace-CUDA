@@ -9,10 +9,9 @@
  ******************************************************************************/
 #pragma once
 
-
  /*------------------Includes---------------------*/
 #include "object_structs.h"
-
+#include <Windows.h>
 
 /*------------Variable Declarations---------------*/
 
@@ -32,4 +31,5 @@ void Draw(BYTE **pLpvBits, const int &width, const int &height, Camera &cam);
  * @param[in,out] pHBitmap - Handle to a bitmap
  */
 void Init(BYTE **pLpvBits, const RECT *window, HBITMAP *pHBitmap);
+
 

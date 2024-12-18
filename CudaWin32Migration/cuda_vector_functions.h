@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include <cuda_runtime.h>
 #include <cuda_fp16.h>
 #include <math.h>
@@ -7,7 +8,7 @@
 #include "cuda_matrix_struct.h"
 
 
-inline __device__ float4 make_float4(float x,
+inline __host__ __device__ float4 make_float4(float x,
 									 float y,
 									 float z)
 {
@@ -17,7 +18,7 @@ inline __device__ float4 make_float4(float x,
 /**
  * @brief Overload multiplication to handle float ab
  */
-inline __device__ float4 operator* (float a, float4 b)
+inline __host__ __device__ float4 operator* (float a, float4 b)
 {
 	return make_float4(a * b.x, a * b.y, a * b.z);
 }
@@ -25,7 +26,7 @@ inline __device__ float4 operator* (float a, float4 b)
 /**
  * @brief Subtraction operator for proper float4 - float4 behaviour
  */
-inline __device__ float4 operator- (float4 a, float4 b)
+inline __host__ __device__ float4 operator- (float4 a, float4 b)
 {
 	return make_float4(a.x - b.x, a.y - b.y, a.z - b.z);
 }
@@ -33,7 +34,7 @@ inline __device__ float4 operator- (float4 a, float4 b)
 /**
  * @brief Addition operator for proper float4 - float4 behaviour
  */
-inline __device__ float4 operator+ (float4 a, float4 b)
+inline __host__ __device__ float4 operator+ (float4 a, float4 b)
 {
 	return make_float4(a.x + b.x, a.y + b.y, a.z + b.z);
 }
@@ -44,7 +45,7 @@ inline __device__ float4 operator+ (float4 a, float4 b)
  * @param b - float4 vector
  * @return Dot multiplication of a and b
  */
-inline __device__ float dot(float4 a, float4 b)
+inline __host__ __device__ float dot(float4 a, float4 b)
 {
 	return a.x * b.x + a.y * b.y + a.z * b.z + 0;
 }
@@ -54,7 +55,7 @@ inline __device__ float dot(float4 a, float4 b)
  * @param v - Vector to be normalized
  * @return normalized vector of *v*
  */
-inline __device__ float4 normalize(const float4 v)
+inline __host__ __device__ float4 normalize(const float4 v)
 {
 	return sqrtf(dot(v, v)) * v;
 }
@@ -64,7 +65,7 @@ inline __device__ float4 normalize(const float4 v)
  * @param v - Vector to be inverted
  * @return Inverted vector of *v*
  */
-inline __device__ float4 invert(float4 v)
+inline __host__ __device__ float4 invert(float4 v)
 {
 	return make_float4(v.x * -1, v.y * -1, v.z * -1);
 }
@@ -74,7 +75,7 @@ inline __device__ float4 invert(float4 v)
  * @param v - Vector to be measured
  * @return Length as double of vector *v*
  */
-inline __device__ float len(float4 v)
+inline __host__ __device__ float len(float4 v)
 {
 	return sqrtf(dot(v, v));
 }
@@ -85,7 +86,7 @@ inline __device__ float len(float4 v)
  * @param b - Matrix to be multiplied
  * @return Vector *a* multiplied with matrix *b*
  */
-inline __device__ float4 mul(float4 a, float3x3 b)
+inline __host__ __device__ float4 mul(float4 a, float3x3 b)
 {
 	return make_float4(dot(b.m00_m01_m02, a),
 					   dot(b.m10_m11_m12, a),
@@ -97,12 +98,12 @@ inline __device__ float4 mul(float4 a, float3x3 b)
  * @param degrees - Degrees
  * @return Radian conversion of *degrees*
  */
-inline __device__ float degrees_to_radians(float degrees)
+inline __host__ __device__ float degrees_to_radians(float degrees)
 {
 	return 0.017453292 * degrees; /* PI / 180 * degrees */
 }
 
-inline __device__ float4 rotate_yaw(float4 a, float yaw)
+inline __host__ __device__ float4 rotate_yaw(float4 a, float yaw)
 {
 	float rad = degrees_to_radians(yaw);
 	float cos_y = cosf(rad);
@@ -113,7 +114,7 @@ inline __device__ float4 rotate_yaw(float4 a, float yaw)
 					   -a.x * sin_y + a.z * cos_y);
 }
 
-inline __device__ float4 rotate_pitch(float4 a, float pitch)
+inline __host__ __device__ float4 rotate_pitch(float4 a, float pitch)
 {
 	float rad = degrees_to_radians(pitch);
 	float cos_x = cosf(rad);
@@ -124,7 +125,7 @@ inline __device__ float4 rotate_pitch(float4 a, float pitch)
 					   a.y * sin_x + a.z * cos_x);
 }
 
-inline __device__ float4 rotate_roll(float4 a, float roll)
+inline __host__ __device__ float4 rotate_roll(float4 a, float roll)
 {
 	float rad = degrees_to_radians(roll);
 	float cos_z = cosf(rad);
@@ -135,7 +136,7 @@ inline __device__ float4 rotate_roll(float4 a, float roll)
 					   a.z);
 }
 
-inline __device__ float4 apply_camera_rotation(float4 cam,
+inline __host__ __device__ float4 apply_camera_rotation(float4 cam,
 											   float yaw,
 											   float pitch,
 											   float roll)
@@ -172,7 +173,7 @@ inline __device__ float4 apply_camera_rotation(float4 cam,
 	return cam;
 }
 
-inline __device__ float4 calc_forward_euler_angle(float yaw,
+inline __host__ __device__ float4 calc_forward_euler_angle(float yaw,
 												  float pitch)
 {
 	float r_pitch = degrees_to_radians(pitch);
